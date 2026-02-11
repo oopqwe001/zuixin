@@ -13,9 +13,11 @@ const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 export const lotteryApi = {
   async getActiveUser(): Promise<User> {
     const saved = localStorage.getItem(STORAGE_KEYS.USER);
-    return saved ? JSON.parse(saved) : {
-      id: 'U88291',
-      username: '山田 太郎',
+    if (saved) return JSON.parse(saved);
+    
+    return {
+      id: 'GUEST',
+      username: 'ゲスト',
       isLoggedIn: false,
       balance: 0,
       bankInfo: { bankName: '', branchName: '', accountNumber: '', accountName: '' },
@@ -36,6 +38,47 @@ export const lotteryApi = {
     localStorage.setItem(STORAGE_KEYS.ALL_USERS, JSON.stringify(users));
   },
 
+  async register(email: string, pass: string, name: string): Promise<{success: boolean, message: string, user?: User}> {
+    await delay(800);
+    const users = await this.getAllUsers();
+    
+    if (users.some(u => u.email === email)) {
+      return { success: false, message: "このメールアドレスは既に登録されています。" };
+    }
+
+    const newUser: User = {
+      id: 'U' + Math.floor(Math.random() * 90000 + 10000),
+      username: name,
+      email: email,
+      password: pass,
+      isLoggedIn: true,
+      balance: 0,
+      bankInfo: { bankName: '', branchName: '', accountNumber: '', accountName: '' },
+      purchases: []
+    };
+
+    users.push(newUser);
+    await this.saveAllUsers(users);
+    await this.saveActiveUser(newUser);
+    
+    return { success: true, message: "登録成功", user: newUser };
+  },
+
+  async login(email: string, pass: string): Promise<{success: boolean, message: string, user?: User}> {
+    await delay(800);
+    const users = await this.getAllUsers();
+    const user = users.find(u => u.email === email && u.password === pass);
+
+    if (!user) {
+      return { success: false, message: "メールアドレスまたはパスワードが正しくありません。" };
+    }
+
+    const loggedInUser = { ...user, isLoggedIn: true };
+    await this.saveActiveUser(loggedInUser);
+    
+    return { success: true, message: "ログイン成功", user: loggedInUser };
+  },
+
   async getTransactions(): Promise<Transaction[]> {
     const saved = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
     return saved ? JSON.parse(saved) : [];
@@ -49,7 +92,7 @@ export const lotteryApi = {
     const saved = localStorage.getItem(STORAGE_KEYS.CONFIG);
     return saved ? JSON.parse(saved) : {
       lineLink: 'https://line.me/ti/p/service123',
-      logoUrl: "", // 使用内置 fallback
+      logoUrl: "", 
       winningNumbers: {
         loto7: { 
           '2024-05-22': [1, 5, 12, 18, 22, 29, 35],
@@ -79,11 +122,8 @@ export const lotteryApi = {
     const users = await this.getAllUsers();
     let user = users.find(u => u.id === userId);
     
-    // 如果是新环境，初始化活跃用户到 allUsers
     if (!user) {
-        const active = await this.getActiveUser();
-        users.push(active);
-        user = active;
+        return { success: false, message: "ユーザーが見つかりません。" };
     }
 
     const validSelections = selections.filter(s => s.numbers.length > 0);

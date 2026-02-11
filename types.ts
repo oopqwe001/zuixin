@@ -1,5 +1,5 @@
 
-export type AppView = 'home' | 'summary' | 'picker' | 'history' | 'mypage' | 'admin' | 'withdraw' | 'deposit' | 'transactions';
+export type AppView = 'home' | 'summary' | 'picker' | 'history' | 'mypage' | 'admin' | 'withdraw' | 'deposit' | 'transactions' | 'login' | 'register';
 
 export interface BankInfo {
   bankName: string;
@@ -11,6 +11,8 @@ export interface BankInfo {
 export interface User {
   id: string;
   username: string;
+  email?: string;
+  password?: string;
   isLoggedIn: boolean;
   balance: number;
   bankInfo: BankInfo;
@@ -35,7 +37,7 @@ export interface Transaction {
   amount: number;
   status: 'pending' | 'approved' | 'rejected';
   timestamp: number;
-  bankDetails?: BankInfo; // 提现时保存的银行卡快照
+  bankDetails?: BankInfo; 
 }
 
 export interface AdminConfig {

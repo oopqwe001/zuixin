@@ -6,12 +6,13 @@ interface Props {
   user: User;
   view: AppView;
   logoUrl: string;
-  onLogin: () => void;
+  onLoginView: () => void;
+  onRegisterView: () => void;
   onAdmin: () => void;
   onBack: () => void;
 }
 
-const Navbar: React.FC<Props> = ({ user, view, logoUrl, onLogin, onAdmin, onBack }) => {
+const Navbar: React.FC<Props> = ({ user, view, logoUrl, onLoginView, onRegisterView, onAdmin, onBack }) => {
   const isHome = view === 'home';
 
   return (
@@ -30,7 +31,6 @@ const Navbar: React.FC<Props> = ({ user, view, logoUrl, onLogin, onAdmin, onBack
             className="flex items-center cursor-pointer active:opacity-70 transition-opacity gap-2" 
             onClick={onAdmin}
           >
-            {/* 官方样式的 Logo 区域 - 已根据反馈移除“公式サイト” */}
             <div className="flex items-center gap-1.5">
               <div className="bg-[#e60012] px-1 py-0.5 rounded-sm">
                  <span className="text-white text-[12px] font-black italic tracking-tighter leading-none">LOTO</span>
@@ -53,13 +53,13 @@ const Navbar: React.FC<Props> = ({ user, view, logoUrl, onLogin, onAdmin, onBack
         ) : (
           <div className="flex items-center gap-1">
             <button 
-              onClick={onLogin} 
+              onClick={onLoginView} 
               className="text-[10px] font-black border border-gray-200 text-gray-600 px-3 py-1.5 rounded-[4px] bg-white active:bg-gray-50 shadow-sm"
             >
               ログイン
             </button>
             <button 
-              onClick={onLogin} 
+              onClick={onRegisterView} 
               className="text-[10px] font-black border border-gray-200 text-gray-600 px-3 py-1.5 rounded-[4px] bg-white active:bg-gray-50 shadow-sm"
             >
               新規利用登録

@@ -13,6 +13,8 @@ import DrawHistory from './components/DrawHistory';
 import WithdrawForm from './components/WithdrawForm';
 import DepositView from './components/DepositView';
 import TransactionHistory from './components/TransactionHistory';
+import RegisterView from './components/RegisterView';
+import LoginView from './components/LoginView';
 
 const GAMES: LotteryGame[] = [
   { id: 'loto7', name: 'LOTO 7', fullName: 'ロトセブン', drawDayText: '毎日', drawDayIcon: '全', maxJackpot: '12億円', price: 300, maxNumber: 37, pickCount: 7, color: '#e60012', colorSecondary: '#005bac' },
@@ -48,11 +50,29 @@ const App: React.FC = () => {
   );
   const [activeSelectionId, setActiveSelectionId] = useState<string>('A');
 
-  const handleLogin = async () => {
-    if (!activeUser) return;
-    const updated = { ...activeUser, isLoggedIn: true };
-    setActiveUser(updated);
-    await lotteryApi.saveActiveUser(updated);
+  const handleRegister = async (data: any) => {
+    setLoading(true);
+    const res = await lotteryApi.register(data.email, data.password, data.username);
+    setLoading(false);
+    if (res.success && res.user) {
+      setActiveUser(res.user);
+      alert("登録が完了しました！");
+      setView('home');
+    } else {
+      alert(res.message);
+    }
+  };
+
+  const handleLogin = async (email: string, pass: string) => {
+    setLoading(true);
+    const res = await lotteryApi.login(email, pass);
+    setLoading(false);
+    if (res.success && res.user) {
+      setActiveUser(res.user);
+      setView('home');
+    } else {
+      alert(res.message);
+    }
   };
 
   const handleLogout = async () => {
@@ -64,7 +84,7 @@ const App: React.FC = () => {
   };
 
   const finalizePurchase = async () => {
-    if (!activeUser?.isLoggedIn) { alert("ログインしてください。"); return; }
+    if (!activeUser?.isLoggedIn) { setView('login'); return; }
     setLoading(true);
     const res = await lotteryApi.processPurchase(activeUser.id, selectedGame, selections);
     setLoading(false);
@@ -82,6 +102,7 @@ const App: React.FC = () => {
     if (view === 'picker') setView('summary');
     else if (view === 'summary') setView('home');
     else if (view === 'deposit' || view === 'withdraw' || view === 'transactions') setView('mypage');
+    else if (view === 'login' || view === 'register') setView('home');
     else setView('home');
   };
 
@@ -90,7 +111,15 @@ const App: React.FC = () => {
   return (
     <div className="flex justify-center bg-[#f2f2f2] min-h-screen">
       <div className={`w-full max-w-[390px] bg-white min-h-screen relative flex flex-col shadow-xl`}>
-        <Navbar user={activeUser} view={view} logoUrl={adminConfig.logoUrl} onLogin={handleLogin} onAdmin={() => setView('admin')} onBack={handleGlobalBack} />
+        <Navbar 
+          user={activeUser} 
+          view={view} 
+          logoUrl={adminConfig.logoUrl} 
+          onLoginView={() => setView('login')} 
+          onRegisterView={() => setView('register')}
+          onAdmin={() => setView('admin')} 
+          onBack={handleGlobalBack} 
+        />
 
         <main className="flex-1 pb-20 overflow-y-auto">
           {view === 'home' && <GameList games={GAMES} onBuy={(g) => { setSelectedGame(g); setView('summary'); }} onShowHistory={() => setView('history')} winningNumbers={adminConfig.winningNumbers} />}
@@ -101,6 +130,8 @@ const App: React.FC = () => {
           {view === 'deposit' && <DepositView onBack={() => setView('mypage')} onSubmit={async (amt) => { alert("入金申請が送信されました。"); setView('mypage'); }} />}
           {view === 'withdraw' && <WithdrawForm onBack={() => setView('mypage')} onSubmit={(data) => { alert("出金申请が送信されました。"); setView('mypage'); }} />}
           {view === 'transactions' && <TransactionHistory userId={activeUser.id} transactions={transactions} onBack={() => setView('mypage')} />}
+          {view === 'register' && <RegisterView onBack={() => setView('home')} onSuccess={handleRegister} />}
+          {view === 'login' && <LoginView onBack={() => setView('home')} onSuccess={handleLogin} onGoToRegister={() => setView('register')} />}
         </main>
         
         {view === 'admin' && <AdminPanel config={adminConfig} setConfig={async (c) => { setAdminConfig(c); await lotteryApi.saveConfig(c); }} onBack={() => setView('home')} users={allUsers} transactions={transactions} onProcessTx={()=>{}} onUpdateUser={()=>{}} onExecuteDraw={()=>{}} />}
@@ -113,7 +144,13 @@ const App: React.FC = () => {
           ].map(tab => (
             <button 
               key={tab.id}
-              onClick={() => setView(tab.id as AppView)} 
+              onClick={() => {
+                if (tab.id === 'mypage' && !activeUser.isLoggedIn) {
+                  setView('login');
+                } else {
+                  setView(tab.id as AppView);
+                }
+              }} 
               className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${view === tab.id ? 'text-[#e60012]' : 'text-gray-400'}`}
             >
               <i className={`fas ${tab.icon} text-[20px]`}></i>
