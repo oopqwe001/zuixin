@@ -24,11 +24,6 @@ const CustomerService: React.FC<Props> = ({ lineLink }) => {
           <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#e60012] border-[3px] border-white rounded-full flex items-center justify-center shadow-md">
             <span className="text-white text-[10px] font-black italic">1</span>
           </div>
-          
-          {/* 悬浮文字提示 (可选，仅在桌面或长按模拟时显眼) */}
-          <div className="absolute right-16 bg-white px-3 py-1 rounded-full shadow-lg border border-gray-100 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-            <span className="text-[10px] font-black text-gray-600">お困りですか？</span>
-          </div>
         </a>
       </div>
     </div>
