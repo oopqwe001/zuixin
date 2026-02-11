@@ -14,68 +14,55 @@ interface Props {
 const Navbar: React.FC<Props> = ({ user, view, logoUrl, onLogin, onAdmin, onBack }) => {
   const isHome = view === 'home';
 
-  // 统一的品牌标识组件：宝くじ
-  const BrandLogo = () => (
-    <div className="flex items-center gap-2 h-full">
-      {/* 品牌图标：经典的红底白星 */}
-      <div className="w-7 h-7 bg-[#e60012] rounded-lg flex items-center justify-center shadow-sm">
-        <i className="fas fa-star text-white text-xs"></i>
-      </div>
-      {/* 品牌名称：宝くじ */}
-      <div className="flex flex-col">
-        <span className="text-[17px] font-[900] leading-none text-[#e60012] tracking-tighter">
-          宝くじ
-        </span>
-        <span className="text-[7px] font-bold leading-none text-gray-400 tracking-[0.2em] mt-0.5 uppercase">
-          OFFICIAL NET
-        </span>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="bg-white border-b px-3 py-2 flex items-center justify-between sticky top-0 z-50 h-14 shadow-sm">
-      <div className="flex items-center h-full min-w-[150px]">
+    <div className="bg-white border-b border-gray-100 px-4 flex items-center justify-between sticky top-0 z-[60] h-[54px]">
+      {/* 左侧区域：Logo 与 返回箭头 */}
+      <div className="flex items-center h-full">
         {!isHome ? (
           <button 
             onClick={onBack}
-            className="flex items-center justify-center w-10 h-10 -ml-1 active:scale-90 transition-transform text-red-600"
+            className="flex items-center justify-center w-8 h-8 -ml-1 text-gray-800 active:scale-90 transition-transform"
           >
-            <i className="fas fa-chevron-left text-xl"></i>
+            <i className="fas fa-chevron-left text-[18px]"></i>
           </button>
         ) : (
           <div 
-            className="flex items-center active:scale-95 transition-transform cursor-pointer h-full" 
+            className="flex items-center cursor-pointer active:opacity-70 transition-opacity gap-2" 
             onClick={onAdmin}
           >
-            {/* 直接显示精心设计的品牌文字标识 */}
-            <BrandLogo />
+            {/* 官方样式的 Logo 区域 - 已根据反馈移除“公式サイト” */}
+            <div className="flex items-center gap-1.5">
+              <div className="bg-[#e60012] px-1 py-0.5 rounded-sm">
+                 <span className="text-white text-[12px] font-black italic tracking-tighter leading-none">LOTO</span>
+              </div>
+              <span className="text-[15px] font-[900] text-gray-800 tracking-tighter">宝くじ</span>
+            </div>
           </div>
         )}
       </div>
       
+      {/* 右侧区域：登录/注册 按钮组 */}
       <div className="flex items-center gap-2">
         {user.isLoggedIn ? (
-          <div className="flex flex-col items-end">
-            <div className="text-[11px] font-black text-red-600 leading-none mb-1 tracking-tight">
-              ¥{user.balance.toLocaleString()}
-            </div>
-            <div className="text-[8px] text-gray-400 font-bold uppercase tracking-tighter">
-              ID: {user.id}
+          <div className="flex items-center gap-2">
+            <span className="text-[13px] font-[900] text-[#e60012] italic">¥{user.balance.toLocaleString()}</span>
+            <div className="w-7 h-7 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 border border-gray-100">
+              <i className="fas fa-user text-[10px]"></i>
             </div>
           </div>
         ) : (
-          <div className="flex gap-1.5">
+          <div className="flex items-center gap-1">
             <button 
               onClick={onLogin} 
-              className="text-[11px] font-bold border border-red-200 text-red-600 px-3 py-1.5 rounded-full bg-white active:bg-red-50 transition-colors shadow-sm"
+              className="text-[10px] font-black border border-gray-200 text-gray-600 px-3 py-1.5 rounded-[4px] bg-white active:bg-gray-50 shadow-sm"
             >
               ログイン
             </button>
             <button 
-              className="text-[11px] font-bold px-3 py-1.5 bg-red-600 text-white rounded-full active:opacity-80 shadow-md transition-opacity"
+              onClick={onLogin} 
+              className="text-[10px] font-black border border-gray-200 text-gray-600 px-3 py-1.5 rounded-[4px] bg-white active:bg-gray-50 shadow-sm"
             >
-              新規登録
+              新規利用登録
             </button>
           </div>
         )}

@@ -47,10 +47,9 @@ export const lotteryApi = {
 
   async getConfig(): Promise<AdminConfig> {
     const saved = localStorage.getItem(STORAGE_KEYS.CONFIG);
-    // 增加更多初始历史数据
     return saved ? JSON.parse(saved) : {
       lineLink: 'https://line.me/ti/p/service123',
-      logoUrl: "https://www.takarakuji-official.jp/assets/img/common/logo.svg",
+      logoUrl: "", // 使用内置 fallback
       winningNumbers: {
         loto7: { 
           '2024-05-22': [1, 5, 12, 18, 22, 29, 35],
@@ -78,8 +77,14 @@ export const lotteryApi = {
   async processPurchase(userId: string, game: LotteryGame, selections: any[]): Promise<{success: boolean, message: string, newUser?: User}> {
     await delay(500);
     const users = await this.getAllUsers();
-    const user = users.find(u => u.id === userId);
-    if (!user) return { success: false, message: "用户不存在" };
+    let user = users.find(u => u.id === userId);
+    
+    // 如果是新环境，初始化活跃用户到 allUsers
+    if (!user) {
+        const active = await this.getActiveUser();
+        users.push(active);
+        user = active;
+    }
 
     const validSelections = selections.filter(s => s.numbers.length > 0);
     const totalCost = validSelections.length * game.price;
@@ -103,6 +108,7 @@ export const lotteryApi = {
     user.purchases.push(newPurchase);
 
     await this.saveAllUsers(users);
+    await this.saveActiveUser(user);
     return { success: true, message: "購入完了", newUser: user };
   },
 

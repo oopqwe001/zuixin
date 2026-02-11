@@ -24,8 +24,6 @@ const NumberPicker: React.FC<Props> = ({ game, selectionId, initialNumbers, onCa
     }
   };
 
-  const reset = () => setSelected([]);
-
   const randomSelect = () => {
     const nums: number[] = [];
     while (nums.length < totalSlots) {
@@ -36,80 +34,73 @@ const NumberPicker: React.FC<Props> = ({ game, selectionId, initialNumbers, onCa
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      {/* Mini Header */}
-      <div className="bg-white border-b py-2 px-4 flex items-center justify-between">
-         <div className="flex flex-col">
-            <span className="text-blue-700 font-black italic leading-none">{game.name.split(' ')[0]}</span>
-            <span className="text-[#f08300] font-black italic leading-none">{game.name.split(' ')[1]}</span>
-         </div>
-         <div className="flex items-center gap-4">
-            <button className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center"><i className="fas fa-chevron-left"></i></button>
-            <span className="text-xl font-bold">{selectionId}</span>
-            <button className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center"><i className="fas fa-chevron-right"></i></button>
-         </div>
-         <div className="w-10"></div>
+    <div className="flex flex-col h-full bg-white view-transition overflow-hidden">
+      {/* 1. 次级标题栏 - 复刻：ロトセブン - 枠 B + X按钮 */}
+      <div className="relative py-4 px-4 flex items-center justify-center bg-white border-b border-gray-50">
+         <h4 className="text-[15px] font-[900] text-[#333] tracking-tighter">
+           {game.fullName} - 枠 {selectionId}
+         </h4>
+         <button 
+           onClick={onCancel} 
+           className="absolute right-4 w-5 h-5 flex items-center justify-center text-gray-400 active:bg-gray-50 transition-colors"
+         >
+           <i className="fas fa-times text-[18px] font-light"></i>
+         </button>
       </div>
 
-      <div className="p-4 flex-1 overflow-y-auto bg-gray-100">
-        <div className="bg-white rounded-lg p-4 shadow-sm">
-          <div className="grid grid-cols-5 gap-2 mb-6">
-            {Array.from({ length: game.maxNumber }, (_, i) => i + 1).map(num => (
+      <div className="flex-1 overflow-y-auto px-4 pt-5 pb-24">
+        {/* 2. 浅蓝色选择状态条 - 复刻截图左对齐文字和右对齐重置按钮 */}
+        <div className="mb-6 flex justify-between items-center bg-[#ebf3ff] px-4 py-3 rounded-[6px]">
+           <span className="text-[13px] font-[900] text-[#005bac]">
+             あと {totalSlots - selected.length} 個選択
+           </span>
+           <button 
+             onClick={() => setSelected([])} 
+             className="text-[10px] font-[900] text-[#e60012] bg-white px-3.5 py-1.5 rounded-[4px] border border-gray-100 shadow-sm active:bg-gray-50 transition-colors"
+           >
+             リセット
+           </button>
+        </div>
+
+        {/* 3. 6列数字网格 - 严格对齐参考图 */}
+        <div className="grid grid-cols-6 gap-2 mb-10">
+          {Array.from({ length: game.maxNumber }, (_, i) => i + 1).map(num => {
+            const isSelected = selected.includes(num);
+            return (
               <button
                 key={num}
                 onClick={() => toggleNumber(num)}
-                className={`h-11 border rounded text-sm font-bold transition-colors ${
-                  selected.includes(num) ? 'bg-[#0091ea] text-white border-transparent' : 'bg-gray-100 border-gray-300 text-gray-700'
+                className={`h-[44px] rounded-[6px] text-[15px] font-[900] transition-all flex items-center justify-center border ${
+                  isSelected 
+                    ? 'bg-[#005bac] text-white border-[#005bac] shadow-sm' 
+                    : 'bg-white border-gray-200 text-[#444] active:bg-gray-50'
                 }`}
               >
                 {num}
               </button>
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
-          <div className="flex items-center justify-between mb-6">
-             <div className="flex items-center gap-3 text-[11px] font-bold">
-               <span className="flex items-center gap-1"><span className="w-3 h-3 bg-[#0091ea]"></span> 自分で選択</span>
-               <span className="flex items-center gap-1"><span className="w-3 h-3 bg-[#7cb342]"></span> ランダム選択</span>
-             </div>
-             <button onClick={reset} className="btn-gray px-6 py-2 rounded text-xs font-bold">リセット</button>
-          </div>
-
-          <div className="flex justify-end mb-4">
-            <div className="text-right">
-               <span className="text-[12px] font-bold">あと{totalSlots - selected.length}個</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 mb-4">
-            <button onClick={randomSelect} className="bg-[#7cb342] text-white py-3 rounded font-bold text-sm shadow-sm">ランダム選択</button>
-            <button onClick={randomSelect} className="bg-[#f08300] text-white py-3 rounded font-bold text-sm shadow-sm">クイックピック</button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 mb-4">
-             <div className="flex flex-col gap-1">
-               <span className="text-[10px] font-bold">購入口数</span>
-               <select className="border border-gray-300 rounded p-2 bg-white text-sm"><option>1</option></select>
-             </div>
-             <div className="flex flex-col gap-1">
-               <span className="text-[10px] font-bold">継続回数</span>
-               <select className="border border-gray-300 rounded p-2 bg-white text-sm"><option>1</option></select>
-             </div>
-          </div>
-
+        {/* 4. 底部功能按钮 - 复刻截图配色：灰色和粉色 */}
+        <div className="space-y-3 px-1">
+          <button 
+            onClick={randomSelect} 
+            className="w-full bg-[#f0f2f5] text-[#555] py-3.5 rounded-lg font-[900] text-[14px] active:bg-gray-200 transition-colors"
+          >
+             クイックピック
+          </button>
           <button 
             onClick={() => onComplete(selected)}
             disabled={selected.length !== totalSlots}
-            className={`w-full py-4 rounded-lg font-black text-lg shadow-md transition-all ${
-              selected.length === totalSlots ? 'bg-red-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            className={`w-full py-4 rounded-lg font-[900] text-[15px] text-white shadow-md transition-all active:scale-[0.98] ${
+              selected.length === totalSlots 
+                ? 'bg-[#f8a5ab] opacity-100' 
+                : 'bg-[#f8a5ab] opacity-60'
             }`}
           >
-            完了
+            この内容で选择する
           </button>
-
-          <p className="text-[10px] text-gray-500 mt-4 leading-tight">
-            ※ 購入口数と継続回数を指定した場合、すべて同じ申込数字での購入になります。
-          </p>
         </div>
       </div>
     </div>

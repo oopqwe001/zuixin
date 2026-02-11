@@ -11,95 +11,101 @@ interface Props {
 
 const GameList: React.FC<Props> = ({ games, onBuy, onShowHistory, winningNumbers }) => {
   return (
-    <div className="p-3 space-y-3">
+    <div className="p-3 space-y-4 view-transition bg-[#f2f2f2]">
       {games.map(game => (
-        <div key={game.id} className="bg-white border border-gray-200 rounded-sm relative overflow-hidden shadow-sm">
-          {/* Carry Over Ribbon */}
-          <div className="absolute top-0 right-0 z-10">
-             <div className="carry-over-ribbon px-4 py-1.5 text-[7px] font-black text-[#333] italic translate-x-3 -translate-y-0.5">
-                キャリーオーバー発生中
-             </div>
-          </div>
+        <div 
+          key={game.id} 
+          className="bg-white rounded-lg overflow-hidden shadow-sm relative border border-gray-200"
+        >
+          {/* 黄色缎带 - 只在 LOTO 7 和 LOTO 6 显示 */}
+          {(game.id === 'loto7' || game.id === 'loto6') && (
+            <div className="absolute top-0 right-0 w-32 overflow-hidden h-16 pointer-events-none">
+                <div className="bg-[#fff100] text-[#333] text-[9px] font-[900] text-center py-0.5 w-[150%] absolute top-3 right-[-35px] rotate-[15deg] shadow-sm">
+                    キャリーオーバー发生中
+                </div>
+            </div>
+          )}
 
-          <div className="p-3">
-            {/* Draw Day Header */}
-            <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-[10px] font-bold">{game.drawDayText}</span>
-              <div className="w-5 h-5 bg-[#f08300] rounded-full flex items-center justify-center text-white text-[10px] font-bold">
-                 {game.drawDayIcon}
+          <div className="p-4">
+            {/* 顶部：抽选日信息 - 修改为“毎日が抽せん日” */}
+            <div className="flex items-center gap-1.5 mb-3">
+              <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-black shadow-inner bg-[#f08300]">
+                <i className="fas fa-star"></i>
               </div>
-              <span className="text-[10px] font-bold">曜日が抽せん日</span>
+              <span className="text-[11px] font-black text-gray-800">毎日が抽せん日</span>
             </div>
 
-            <div className="flex items-start gap-4">
-               {/* Left: Logo Area */}
-               <div className="w-[100px] flex flex-col items-center pt-2">
-                  {game.id === 'loto7' && (
-                    <div className="flex flex-col items-center">
-                       <img src="https://www.takarakuji-official.jp/assets/img/common/logo-loto7.svg" alt="LOTO7" className="w-20 mb-1" />
-                       <span className="text-[10px] font-black text-blue-800 tracking-tighter">ロトセブン</span>
+            <div className="flex items-start gap-3 mb-3">
+              {/* 左侧：Logo区域 - 使用 CSS 绘图替代不可靠的图片链接 */}
+              <div className="w-24 shrink-0 pt-1">
+                {game.id === 'loto7' && (
+                  <div className="flex flex-col items-center">
+                    <div className="w-full h-14 border-[1.5px] border-[#e60012] rounded-[4px] bg-white flex flex-col items-center justify-center p-1">
+                      <span className="text-[#e60012] text-[16px] font-[900] italic tracking-tighter leading-none mb-0.5">LOTO</span>
+                      <div className="bg-[#e60012] text-white text-[10px] px-1.5 font-black rounded-sm leading-tight flex items-center justify-center">7</div>
                     </div>
-                  )}
-                  {game.id === 'loto6' && (
-                    <div className="flex flex-col items-center">
-                       <img src="https://www.takarakuji-official.jp/assets/img/common/logo-loto6.svg" alt="LOTO6" className="w-20 mb-1" />
-                       <span className="text-[10px] font-black text-blue-800 tracking-tighter">ロトシックス</span>
-                    </div>
-                  )}
-                  {game.id === 'miniloto' && (
-                    <div className="flex flex-col items-center">
-                       <div className="bg-[#f08300] text-white px-2 py-0.5 font-black italic text-sm skew-x-[-12deg] mb-1">MINI LOTO</div>
-                       <span className="text-[10px] font-black text-blue-800 tracking-tighter">ミニロト</span>
-                    </div>
-                  )}
-               </div>
-
-               {/* Right: Prize Box Area */}
-               <div className="flex-1">
-                  <div className="price-box p-3 border border-[#fff59d] text-center relative">
-                     <div className="text-[9px] text-gray-600 mb-1 font-bold">
-                        1等 最高 <span className="text-xl font-black text-red-600 italic tracking-tighter">{game.maxJackpot}</span>
-                     </div>
-                     <div className="text-[8px] text-gray-500 font-bold leading-none">
-                        ※キャリーオーバー発生时
-                     </div>
+                    <span className="text-[10px] font-black text-[#005bac] mt-1 tracking-tighter italic">ロトセブン</span>
                   </div>
-                  <div className="mt-2 text-center text-[10px] font-bold text-gray-700">
-                     1口：{game.price}円
+                )}
+                {game.id === 'loto6' && (
+                  <div className="flex flex-col items-center">
+                    <div className="w-full h-14 border-[1.5px] border-[#d81b60] rounded-[4px] bg-white flex flex-col items-center justify-center p-1">
+                      <span className="text-[#d81b60] text-[16px] font-[900] italic tracking-tighter leading-none mb-0.5">LOTO</span>
+                      <div className="bg-[#d81b60] text-white text-[10px] px-1.5 font-black rounded-sm leading-tight flex items-center justify-center">6</div>
+                    </div>
+                    <span className="text-[10px] font-black text-[#005bac] mt-1 tracking-tighter italic">ロトシックス</span>
                   </div>
-               </div>
+                )}
+                {game.id === 'miniloto' && (
+                  <div className="flex flex-col items-center">
+                    <div className="w-full h-14 rounded-[4px] bg-[#009b4f] flex items-center justify-center px-1 shadow-sm">
+                      <span className="text-white text-[12px] font-[900] italic tracking-tighter leading-none whitespace-nowrap">MINI LOTO</span>
+                    </div>
+                    <span className="text-[10px] font-black text-[#005bac] mt-1 tracking-tighter italic">ミニロト</span>
+                  </div>
+                )}
+              </div>
+
+              {/* 右侧：中奖金额显示区 */}
+              <div className="flex-1 bg-[#fffbe6] rounded-md border border-[#fceebb] py-2 px-1 text-center min-h-[70px] flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <span className="text-[10px] font-black text-gray-700">{game.id === 'miniloto' ? '1等约' : '1等 最高'}</span>
+                  <span className="text-[22px] font-[900] text-[#e60012] italic tracking-tighter leading-none">
+                    {game.maxJackpot}
+                  </span>
+                </div>
+                <div className="text-[8px] font-black text-gray-400 leading-none">
+                  {game.id === 'miniloto' ? '※ 理論値' : '※ キャリーオーバー発生時'}
+                </div>
+              </div>
             </div>
 
-            {/* Deadline Section */}
-            <div className="mt-3 pt-3 dotted-line">
-               <div className="text-center">
-                  <span className="text-[9px] text-gray-500 font-bold">発売締切：</span>
-                  <span className="text-[11px] text-[#f08300] font-black">抽せん日当日の18:20まで</span>
-               </div>
+            <div className="text-center mb-3">
+              <span className="text-[12px] font-black text-gray-800">1口：{game.price}円</span>
             </div>
-          </div>
 
-          {/* Bottom Buttons */}
-          <div className="flex p-3 pt-0 gap-2">
-            <button className="flex-1 btn-gray-gradient h-10 rounded-sm text-[11px] font-black active:opacity-80">
-               商品概要
-            </button>
-            <button onClick={() => onBuy(game)} className="flex-1 btn-red h-10 rounded-sm text-[11px] font-black active:opacity-80 shadow-inner">
-               ネット購入
-            </button>
+            <div className="relative mb-4">
+              <div className="official-dotted-line"></div>
+              <div className="text-center mt-2">
+                <span className="text-[10px] font-black text-gray-400 mr-1">発売締切:</span>
+                <span className="text-[11px] font-[900] text-[#f08300]">抽せん日当日の24:00まで</span>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button className="flex-1 btn-gray-gradient h-10 rounded-sm text-[11px] font-black text-gray-700 active:bg-gray-200">
+                 商品概要
+              </button>
+              <button 
+                onClick={() => onBuy(game)} 
+                className="flex-1 bg-[#e60012] h-10 rounded-sm text-[11px] font-black text-white shadow-md active:opacity-90"
+              >
+                 ネット購入
+              </button>
+            </div>
           </div>
         </div>
       ))}
-
-      {/* Footer Info */}
-      <div className="mt-4 p-4 bg-white border border-gray-200 rounded-sm relative">
-         <h4 className="text-[11px] font-black mb-2 border-b pb-1">インフォメーション</h4>
-         <p className="text-[9px] text-gray-500 leading-relaxed font-bold pr-14">
-            ※抽せん時間は毎日 JST 08:00 となります。前日 18:20 以降のご注文は次回の抽せん対象となります。
-         </p>
-         {/* 这里的红框位置现在作为浮窗停留的视觉参考点 */}
-         <div className="absolute bottom-4 right-4 w-12 h-12 pointer-events-none opacity-0"></div>
-      </div>
     </div>
   );
 };

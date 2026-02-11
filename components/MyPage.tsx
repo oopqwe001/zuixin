@@ -5,80 +5,69 @@ import { User, AppView } from '../types';
 interface Props {
   user: User;
   onAction: (view: AppView) => void;
+  onLogout: () => void;
 }
 
-const MyPage: React.FC<Props> = ({ user, onAction }) => {
+const MyPage: React.FC<Props> = ({ user, onAction, onLogout }) => {
   return (
-    <div className="p-4 animate-in fade-in duration-300">
-      <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 text-2xl">
-            <i className="fas fa-user"></i>
-          </div>
-          <div>
-            <h2 className="text-xl font-bold">{user.isLoggedIn ? user.username : '未ログイン'}</h2>
-            <p className="text-xs text-gray-400">ID: {user.id}</p>
+    <div className="min-h-full bg-[#fffdf0] pb-10 view-transition">
+      <div className="p-5">
+        <h2 className="text-[22px] font-black text-[#333] mb-6 tracking-tight">マイページ</h2>
+        
+        {/* 余额卡片 - 增加黄色装饰与阴影 */}
+        <div className="bg-white rounded-[1.5rem] p-8 shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-gray-100 mb-8 relative overflow-hidden">
+          {/* 顶部黄色装饰条 */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#ffd700] via-[#fff100] to-[#ffd700]"></div>
+          
+          <div className="text-center">
+            <p className="text-[13px] text-gray-400 font-bold mb-2">お預かり当せん金</p>
+            <div className="flex items-baseline justify-center gap-2 mb-8">
+              <span className="text-2xl font-black text-[#1a1c1e]">¥</span>
+              <span className="text-4xl font-black text-[#1a1c1e] tracking-tighter">
+                {user.balance.toLocaleString()}
+              </span>
+            </div>
+            
+            <div className="flex gap-3">
+              <button 
+                onClick={() => onAction('deposit')}
+                className="flex-[1.2] bg-[#e60012] text-white py-3.5 rounded-xl font-black text-[14px] shadow-lg shadow-red-100 active:scale-95 transition-all"
+              >
+                チャージ
+              </button>
+              <button 
+                onClick={() => onAction('withdraw')}
+                className="flex-1 bg-gray-50 text-gray-500 py-3.5 rounded-xl font-bold text-[14px] border border-gray-100 active:bg-gray-100 transition-all"
+              >
+                出金申請
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="bg-gray-50 rounded-xl p-4 flex justify-between items-center mb-4">
-          <div>
-            <p className="text-xs text-gray-500 mb-1">チャージ残高</p>
-            <p className="text-2xl font-black text-red-600">¥ {user.balance.toLocaleString()}</p>
-          </div>
-          <button 
-            onClick={() => onAction('deposit')}
-            className="bg-red-600 text-white px-6 py-2 rounded-full font-bold text-sm shadow-md active:scale-95 transition-all"
-          >入金</button>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <button 
-            onClick={() => onAction('withdraw')}
-            className="border border-gray-100 py-4 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-50 transition-all shadow-sm"
-          >
-            <i className="fas fa-university text-red-600"></i>
-            <span className="text-xs font-bold text-gray-700">出金申請</span>
-          </button>
-          <button 
-            onClick={() => onAction('transactions')}
-            className="border border-gray-100 py-4 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-50 transition-all shadow-sm"
-          >
-            <i className="fas fa-history text-red-600"></i>
-            <span className="text-xs font-bold text-gray-700">資金履歴</span>
-          </button>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-4 border-b bg-gray-50/50">
-          <h3 className="font-bold text-sm text-gray-600">メニュー</h3>
-        </div>
-        <div className="divide-y divide-gray-50">
-          <button 
-            onClick={() => onAction('transactions')}
-            className="w-full px-4 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors group text-left"
-          >
-            <div className="flex items-center gap-3">
-              <i className="fas fa-list-ul text-red-500/50 text-xs"></i>
-              <span className="text-sm font-medium">すべての取引履歴</span>
-            </div>
-            <i className="fas fa-chevron-right text-gray-300 text-[10px] group-hover:translate-x-1 transition-transform"></i>
-          </button>
-          <button className="w-full px-4 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors group text-left">
-            <div className="flex items-center gap-3">
-              <i className="fas fa-credit-card text-red-500/50 text-xs"></i>
-              <span className="text-sm font-medium">銀行口座設定</span>
-            </div>
-            <i className="fas fa-chevron-right text-gray-300 text-[10px] group-hover:translate-x-1 transition-transform"></i>
-          </button>
-          <button className="w-full px-4 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors group text-left">
-            <div className="flex items-center gap-3">
-              <i className="fas fa-shield-alt text-red-500/50 text-xs"></i>
-              <span className="text-sm font-medium">セキュリティ設定</span>
-            </div>
-            <i className="fas fa-chevron-right text-gray-300 text-[10px] group-hover:translate-x-1 transition-transform"></i>
-          </button>
+        {/* 列表菜单 - 对齐截图样式 */}
+        <div className="bg-white rounded-[1.5rem] border border-gray-100 overflow-hidden shadow-[0_5px_15px_rgba(0,0,0,0.02)]">
+          {[
+            { icon: 'fa-history', label: '取引履歴', action: () => onAction('transactions') },
+            { icon: 'fa-credit-card', label: '口座設定' },
+            { icon: 'fa-shield-alt', label: 'セキュリティ' },
+            { icon: 'fa-question-circle', label: 'ヘルプ' },
+            { icon: 'fa-sign-out-alt', label: 'ログアウト', action: onLogout }
+          ].map((item, idx) => (
+            <button 
+              key={idx} 
+              onClick={item.action}
+              className="w-full px-6 py-5 flex items-center justify-between border-b last:border-none border-gray-50 active:bg-gray-50 text-left transition-colors group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-6 flex justify-center">
+                  <i className={`fas ${item.icon} text-gray-400 group-hover:text-[#e60012] transition-colors`}></i>
+                </div>
+                <span className="text-[15px] font-bold text-[#444]">{item.label}</span>
+              </div>
+              <i className="fas fa-chevron-right text-[12px] text-gray-300"></i>
+            </button>
+          ))}
         </div>
       </div>
     </div>

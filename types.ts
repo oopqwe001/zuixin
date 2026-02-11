@@ -35,7 +35,7 @@ export interface Transaction {
   amount: number;
   status: 'pending' | 'approved' | 'rejected';
   timestamp: number;
-  bankDetails?: BankInfo;
+  bankDetails?: BankInfo; // 提现时保存的银行卡快照
 }
 
 export interface AdminConfig {

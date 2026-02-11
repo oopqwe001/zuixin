@@ -7,19 +7,30 @@ interface Props {
 
 const CustomerService: React.FC<Props> = ({ lineLink }) => {
   return (
-    /* 外层容器：固定在屏幕底部，宽度与主容器一致 (390px)，水平居中 */
     <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] pointer-events-none z-[60]">
-      {/* 按钮本身：设置在容器内部的绝对位置，通过 bottom-60 调整到您标记的高度 */}
-      <a 
-        href={lineLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="absolute bottom-60 right-4 w-12 h-12 bg-[#06c755] rounded-full flex items-center justify-center shadow-[0_4px_15px_rgba(6,199,85,0.4)] pointer-events-auto hover:scale-110 active:scale-95 transition-all border-2 border-white/30"
-      >
-        <i className="fab fa-line text-white text-2xl"></i>
-        {/* 消息角标提示 */}
-        <div className="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white font-black shadow-sm">1</div>
-      </a>
+      <div className="absolute bottom-24 right-5 pointer-events-auto group">
+        {/* 外围脉冲光晕 */}
+        <div className="absolute inset-0 bg-[#06c755] rounded-full animate-ping opacity-20 scale-125"></div>
+        
+        <a 
+          href={lineLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative w-14 h-14 bg-[#06c755] rounded-full flex items-center justify-center shadow-[0_8px_25px_rgba(6,199,85,0.4)] hover:scale-110 active:scale-95 transition-all duration-300 border-4 border-white"
+        >
+          <i className="fab fa-line text-white text-3xl"></i>
+          
+          {/* 红色角标优化 */}
+          <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#e60012] border-[3px] border-white rounded-full flex items-center justify-center shadow-md">
+            <span className="text-white text-[10px] font-black italic">1</span>
+          </div>
+          
+          {/* 悬浮文字提示 (可选，仅在桌面或长按模拟时显眼) */}
+          <div className="absolute right-16 bg-white px-3 py-1 rounded-full shadow-lg border border-gray-100 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+            <span className="text-[10px] font-black text-gray-600">お困りですか？</span>
+          </div>
+        </a>
+      </div>
     </div>
   );
 };
