@@ -40,9 +40,12 @@ const MyPage: React.FC<Props> = ({ user, onAction }) => {
             <i className="fas fa-university text-red-600"></i>
             <span className="text-xs font-bold text-gray-700">出金申請</span>
           </button>
-          <button className="border border-gray-100 py-4 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-50 transition-all shadow-sm">
-            <i className="fas fa-receipt text-red-600"></i>
-            <span className="text-xs font-bold text-gray-700">購入履歴</span>
+          <button 
+            onClick={() => onAction('transactions')}
+            className="border border-gray-100 py-4 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-50 transition-all shadow-sm"
+          >
+            <i className="fas fa-history text-red-600"></i>
+            <span className="text-xs font-bold text-gray-700">資金履歴</span>
           </button>
         </div>
       </div>
@@ -52,21 +55,24 @@ const MyPage: React.FC<Props> = ({ user, onAction }) => {
           <h3 className="font-bold text-sm text-gray-600">メニュー</h3>
         </div>
         <div className="divide-y divide-gray-50">
-          <button className="w-full px-4 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors group">
+          <button 
+            onClick={() => onAction('transactions')}
+            className="w-full px-4 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors group text-left"
+          >
             <div className="flex items-center gap-3">
-              <i className="fas fa-history text-red-500/50 text-xs"></i>
-              <span className="text-sm font-medium">資金履歴</span>
+              <i className="fas fa-list-ul text-red-500/50 text-xs"></i>
+              <span className="text-sm font-medium">すべての取引履歴</span>
             </div>
             <i className="fas fa-chevron-right text-gray-300 text-[10px] group-hover:translate-x-1 transition-transform"></i>
           </button>
-          <button className="w-full px-4 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors group">
+          <button className="w-full px-4 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors group text-left">
             <div className="flex items-center gap-3">
               <i className="fas fa-credit-card text-red-500/50 text-xs"></i>
               <span className="text-sm font-medium">銀行口座設定</span>
             </div>
             <i className="fas fa-chevron-right text-gray-300 text-[10px] group-hover:translate-x-1 transition-transform"></i>
           </button>
-          <button className="w-full px-4 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors group">
+          <button className="w-full px-4 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors group text-left">
             <div className="flex items-center gap-3">
               <i className="fas fa-shield-alt text-red-500/50 text-xs"></i>
               <span className="text-sm font-medium">セキュリティ設定</span>

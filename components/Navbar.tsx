@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { User, AppView } from '../types';
 
 interface Props {
@@ -13,17 +13,22 @@ interface Props {
 
 const Navbar: React.FC<Props> = ({ user, view, logoUrl, onLogin, onAdmin, onBack }) => {
   const isHome = view === 'home';
-  const [imgError, setImgError] = useState(false);
 
-  // 默认备选显示内容，如果图片无法加载
-  const FallbackLogo = () => (
-    <div className="flex items-center gap-1.5">
-      <div className="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center shadow-sm">
-        <i className="fas fa-star text-white text-[10px]"></i>
+  // 统一的品牌标识组件：宝くじ
+  const BrandLogo = () => (
+    <div className="flex items-center gap-2 h-full">
+      {/* 品牌图标：经典的红底白星 */}
+      <div className="w-7 h-7 bg-[#e60012] rounded-lg flex items-center justify-center shadow-sm">
+        <i className="fas fa-star text-white text-xs"></i>
       </div>
+      {/* 品牌名称：宝くじ */}
       <div className="flex flex-col">
-        <span className="text-[11px] font-black leading-none text-red-600 tracking-tighter uppercase">Takarakuji</span>
-        <span className="text-[8px] font-bold leading-none text-gray-400 tracking-widest uppercase">Official Net</span>
+        <span className="text-[17px] font-[900] leading-none text-[#e60012] tracking-tighter">
+          宝くじ
+        </span>
+        <span className="text-[7px] font-bold leading-none text-gray-400 tracking-[0.2em] mt-0.5 uppercase">
+          OFFICIAL NET
+        </span>
       </div>
     </div>
   );
@@ -43,17 +48,8 @@ const Navbar: React.FC<Props> = ({ user, view, logoUrl, onLogin, onAdmin, onBack
             className="flex items-center active:scale-95 transition-transform cursor-pointer h-full" 
             onClick={onAdmin}
           >
-            {/* 这里的 logo 增加 onError 逻辑 */}
-            {!imgError ? (
-              <img 
-                src={logoUrl || "https://www.takarakuji-official.jp/assets/img/common/logo.svg"} 
-                alt="宝くじ公式サイト" 
-                className="h-7 max-w-[180px] object-contain"
-                onError={() => setImgError(true)}
-              />
-            ) : (
-              <FallbackLogo />
-            )}
+            {/* 直接显示精心设计的品牌文字标识 */}
+            <BrandLogo />
           </div>
         )}
       </div>
@@ -61,8 +57,12 @@ const Navbar: React.FC<Props> = ({ user, view, logoUrl, onLogin, onAdmin, onBack
       <div className="flex items-center gap-2">
         {user.isLoggedIn ? (
           <div className="flex flex-col items-end">
-            <div className="text-[10px] font-black text-red-600 leading-none mb-0.5">¥{user.balance.toLocaleString()}</div>
-            <div className="text-[8px] text-gray-400 font-bold uppercase tracking-tighter">ID: {user.id}</div>
+            <div className="text-[11px] font-black text-red-600 leading-none mb-1 tracking-tight">
+              ¥{user.balance.toLocaleString()}
+            </div>
+            <div className="text-[8px] text-gray-400 font-bold uppercase tracking-tighter">
+              ID: {user.id}
+            </div>
           </div>
         ) : (
           <div className="flex gap-1.5">

@@ -1,5 +1,5 @@
 
-export type AppView = 'home' | 'summary' | 'picker' | 'history' | 'mypage' | 'admin' | 'withdraw' | 'deposit';
+export type AppView = 'home' | 'summary' | 'picker' | 'history' | 'mypage' | 'admin' | 'withdraw' | 'deposit' | 'transactions';
 
 export interface BankInfo {
   bankName: string;
