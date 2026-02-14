@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { LotteryGame } from '../types';
+import { geminiService } from '../services/geminiService';
 
 interface Props {
   game: LotteryGame;
@@ -12,6 +12,7 @@ interface Props {
 
 const NumberPicker: React.FC<Props> = ({ game, selectionId, initialNumbers, onCancel, onComplete }) => {
   const [selected, setSelected] = useState<number[]>(initialNumbers);
+  const [isAiLoading, setIsAiLoading] = useState(false);
   const totalSlots = game.pickCount;
 
   const toggleNumber = (num: number) => {
@@ -24,18 +25,25 @@ const NumberPicker: React.FC<Props> = ({ game, selectionId, initialNumbers, onCa
     }
   };
 
-  const randomSelect = () => {
-    const nums: number[] = [];
-    while (nums.length < totalSlots) {
-      const r = Math.floor(Math.random() * game.maxNumber) + 1;
-      if (!nums.includes(r)) nums.push(r);
+  const handleAiPredict = async () => {
+    setIsAiLoading(true);
+    const nums = await geminiService.predictLuckyNumbers(game.fullName, game.pickCount, game.maxNumber);
+    if (nums.length === game.pickCount) {
+      setSelected(nums);
+    } else {
+      // Fallback to random if AI fails
+      const fallback: number[] = [];
+      while (fallback.length < totalSlots) {
+        const r = Math.floor(Math.random() * game.maxNumber) + 1;
+        if (!fallback.includes(r)) fallback.push(r);
+      }
+      setSelected(fallback.sort((a, b) => a - b));
     }
-    setSelected(nums.sort((a, b) => a - b));
+    setIsAiLoading(false);
   };
 
   return (
     <div className="flex flex-col h-full bg-white view-transition overflow-hidden">
-      {/* 1. 次级标题栏 - 复刻：ロトセブン - 枠 B + X按钮 */}
       <div className="relative py-4 px-4 flex items-center justify-center bg-white border-b border-gray-50">
          <h4 className="text-[15px] font-[900] text-[#333] tracking-tighter">
            {game.fullName} - 枠 {selectionId}
@@ -49,20 +57,18 @@ const NumberPicker: React.FC<Props> = ({ game, selectionId, initialNumbers, onCa
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pt-5 pb-24">
-        {/* 2. 浅蓝色选择状态条 - 复刻截图左对齐文字和右对齐重置按钮 */}
         <div className="mb-6 flex justify-between items-center bg-[#ebf3ff] px-4 py-3 rounded-[6px]">
            <span className="text-[13px] font-[900] text-[#005bac]">
              あと {totalSlots - selected.length} 個選択
            </span>
            <button 
              onClick={() => setSelected([])} 
-             className="text-[10px] font-[900] text-[#e60012] bg-white px-3.5 py-1.5 rounded-[4px] border border-gray-100 shadow-sm active:bg-gray-50 transition-colors"
+             className="text-[10px] font-[900] text-[#e60012] bg-white px-3.5 py-1.5 rounded-[4px] border border-gray-100 shadow-sm active:bg-gray-50"
            >
              リセット
            </button>
         </div>
 
-        {/* 3. 6列数字网格 - 严格对齐参考图 */}
         <div className="grid grid-cols-6 gap-2 mb-10">
           {Array.from({ length: game.maxNumber }, (_, i) => i + 1).map(num => {
             const isSelected = selected.includes(num);
@@ -72,7 +78,7 @@ const NumberPicker: React.FC<Props> = ({ game, selectionId, initialNumbers, onCa
                 onClick={() => toggleNumber(num)}
                 className={`h-[44px] rounded-[6px] text-[15px] font-[900] transition-all flex items-center justify-center border ${
                   isSelected 
-                    ? 'bg-[#005bac] text-white border-[#005bac] shadow-sm' 
+                    ? 'bg-[#005bac] text-white border-[#005bac] shadow-sm scale-95' 
                     : 'bg-white border-gray-200 text-[#444] active:bg-gray-50'
                 }`}
               >
@@ -82,24 +88,29 @@ const NumberPicker: React.FC<Props> = ({ game, selectionId, initialNumbers, onCa
           })}
         </div>
 
-        {/* 4. 底部功能按钮 - 复刻截图配色：灰色和粉色 */}
         <div className="space-y-3 px-1">
           <button 
-            onClick={randomSelect} 
-            className="w-full bg-[#f0f2f5] text-[#555] py-3.5 rounded-lg font-[900] text-[14px] active:bg-gray-200 transition-colors"
+            onClick={handleAiPredict}
+            disabled={isAiLoading}
+            className={`w-full bg-gradient-to-r from-[#6366f1] to-[#a855f7] text-white py-3.5 rounded-lg font-[900] text-[14px] shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 transition-all active:scale-95 ${isAiLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-             クイックピック
+             {isAiLoading ? (
+               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+             ) : (
+               <i className="fas fa-robot"></i>
+             )}
+             AI 予想 (Gemini)
           </button>
           <button 
             onClick={() => onComplete(selected)}
             disabled={selected.length !== totalSlots}
             className={`w-full py-4 rounded-lg font-[900] text-[15px] text-white shadow-md transition-all active:scale-[0.98] ${
               selected.length === totalSlots 
-                ? 'bg-[#f8a5ab] opacity-100' 
-                : 'bg-[#f8a5ab] opacity-60'
+                ? 'bg-[#e60012] opacity-100' 
+                : 'bg-gray-200 text-gray-400 opacity-100'
             }`}
           >
-            この内容で选择する
+            この内容で選択する
           </button>
         </div>
       </div>
